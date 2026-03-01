@@ -70,18 +70,10 @@ module "aks" {
   aks_subnet_id                 = module.networking.aks_subnet_id
   app_gateway_id                = module.appgateway.app_gateway_id
   appgw_subnet_id               = module.networking.appgw_subnet_id
-  aks_identity_id               = module.identity.aks_identity_id
-  aks_identity_principal_id     = module.identity.aks_identity_principal_id
   kubelet_identity_id           = module.identity.kubelet_identity_id
   kubelet_identity_client_id    = module.identity.kubelet_identity_client_id
   kubelet_identity_principal_id = module.identity.kubelet_identity_principal_id
   node_count                    = var.aks_node_count
   vm_size                       = var.aks_vm_size
   tags                          = var.tags
-
-  depends_on = [
-    module.identity,
-    module.networking,
-    module.appgateway,
-  ]
 }

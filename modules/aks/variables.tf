@@ -38,16 +38,6 @@ variable "appgw_subnet_id" {
   type        = string
 }
 
-variable "aks_identity_id" {
-  description = "ID of the user-assigned identity for AKS control plane"
-  type        = string
-}
-
-variable "aks_identity_principal_id" {
-  description = "Principal ID of the user-assigned identity for AKS control plane"
-  type        = string
-}
-
 variable "kubelet_identity_id" {
   description = "ID of the user-assigned identity for kubelet"
   type        = string

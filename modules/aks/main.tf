@@ -9,6 +9,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   kubernetes_version      = var.kubernetes_version
   private_cluster_enabled = false
   sku_tier                = "Free"
+  oidc_issuer_enabled     = true
+  workload_identity_enabled = true
   tags                    = var.tags
 
   # Single VMSS node pool
@@ -28,17 +30,9 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
   }
 
-  # System-assigned + user-assigned identity for the AKS control plane
+  # System-assigned identity for the AKS control plane
   identity {
     type         = "SystemAssigned"
-    identity_ids = [var.aks_identity_id]
-  }
-
-  # User-assigned identity for kubelet (ACR pull, etc.)
-  kubelet_identity {
-    client_id                 = var.kubelet_identity_client_id
-    object_id                 = var.kubelet_identity_principal_id
-    user_assigned_identity_id = var.kubelet_identity_id
   }
 
   # Network configuration - Azure CNI with NAT Gateway for outbound

@@ -24,8 +24,8 @@ output "node_resource_group" {
   value       = azurerm_kubernetes_cluster.main.node_resource_group
 }
 
-output "kubelet_identity_principal_id" {
-  description = "Principal ID of the kubelet managed identity (for ACR pull)"
-  value       = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
+output "oidc_issuer_url" {
+  description = "OIDC issuer URL for the AKS cluster"
+  value       = azurerm_kubernetes_cluster.main.oidc_issuer_url
 }
 
