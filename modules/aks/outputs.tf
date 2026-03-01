@@ -23,3 +23,9 @@ output "node_resource_group" {
   description = "Auto-generated resource group for AKS node resources"
   value       = azurerm_kubernetes_cluster.main.node_resource_group
 }
+
+output "kubelet_identity_principal_id" {
+  description = "Principal ID of the kubelet managed identity (for ACR pull)"
+  value       = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
+}
+

@@ -46,6 +46,12 @@ resource "azurerm_application_gateway" "main" {
     subnet_id = var.appgw_subnet_id
   }
 
+  # Use modern TLS policy - AppGwSslPolicy20150501 is deprecated
+  ssl_policy {
+    policy_type = "Predefined"
+    policy_name = "AppGwSslPolicy20220101"
+  }
+
   frontend_ip_configuration {
     name                 = local.frontend_ip_config_name
     public_ip_address_id = azurerm_public_ip.appgw.id

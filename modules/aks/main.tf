@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# AKS Cluster - Private, with Istio Service Mesh and AGIC
+# AKS Cluster - Private, with Istio Service Mesh
 # -----------------------------------------------------------------------------
 resource "azurerm_kubernetes_cluster" "main" {
   name                    = "aks-${var.project_name}"
@@ -7,8 +7,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   resource_group_name     = var.resource_group_name
   dns_prefix              = "aks-${var.project_name}"
   kubernetes_version      = var.kubernetes_version
-  private_cluster_enabled = true
-  private_dns_zone_id     = "System"
+  private_cluster_enabled = false
   sku_tier                = "Free"
   tags                    = var.tags
 
@@ -29,9 +28,9 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
   }
 
-  # User-assigned identity for the AKS control plane
+  # System-assigned + user-assigned identity for the AKS control plane
   identity {
-    type         = "UserAssigned"
+    type         = "SystemAssigned"
     identity_ids = [var.aks_identity_id]
   }
 
@@ -44,40 +43,18 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   # Network configuration - Azure CNI with NAT Gateway for outbound
   network_profile {
-    network_plugin = "azure"
-    network_policy = "azure"
-    outbound_type  = "userAssignedNATGateway"
-    service_cidr   = "10.1.0.0/16"
-    dns_service_ip = "10.1.0.10"
+    network_plugin      = "azure"
+    network_plugin_mode = "overlay"
+    network_policy      = "azure"
+    outbound_type       = "loadBalancer"
+    service_cidr        = "10.1.0.0/16"
+    dns_service_ip      = "10.1.0.10"
+    pod_cidr            = "10.2.0.0/16"
   }
 
-  # Istio Service Mesh addon
+  # Istio Service Mesh addon with internal ingress gateway
   service_mesh_profile {
-    mode = "Istio"
+    mode                          = "Istio"
+    internal_ingress_gateway_enabled = true
   }
-
-  # Application Gateway Ingress Controller (AGIC) addon
-  ingress_application_gateway {
-    gateway_id = var.app_gateway_id
-  }
-}
-
-# -----------------------------------------------------------------------------
-# Role Assignments for AGIC identity (created by AKS addon)
-# These must be created after the AKS cluster since the AGIC identity
-# is only available after cluster creation
-# -----------------------------------------------------------------------------
-
-# AGIC identity needs Contributor on the Application Gateway
-resource "azurerm_role_assignment" "agic_appgw_contributor" {
-  scope                = var.app_gateway_id
-  role_definition_name = "Contributor"
-  principal_id         = azurerm_kubernetes_cluster.main.ingress_application_gateway[0].ingress_application_gateway_identity[0].object_id
-}
-
-# AGIC identity needs Reader on the Resource Group
-resource "azurerm_role_assignment" "agic_rg_reader" {
-  scope                = var.resource_group_id
-  role_definition_name = "Reader"
-  principal_id         = azurerm_kubernetes_cluster.main.ingress_application_gateway[0].ingress_application_gateway_identity[0].object_id
 }

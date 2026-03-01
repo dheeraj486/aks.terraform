@@ -69,6 +69,7 @@ module "aks" {
   kubernetes_version            = var.kubernetes_version
   aks_subnet_id                 = module.networking.aks_subnet_id
   app_gateway_id                = module.appgateway.app_gateway_id
+  appgw_subnet_id               = module.networking.appgw_subnet_id
   aks_identity_id               = module.identity.aks_identity_id
   aks_identity_principal_id     = module.identity.aks_identity_principal_id
   kubelet_identity_id           = module.identity.kubelet_identity_id

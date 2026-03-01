@@ -33,6 +33,11 @@ variable "app_gateway_id" {
   type        = string
 }
 
+variable "appgw_subnet_id" {
+  description = "ID of the Application Gateway subnet (for AGIC Network Contributor role)"
+  type        = string
+}
+
 variable "aks_identity_id" {
   description = "ID of the user-assigned identity for AKS control plane"
   type        = string
